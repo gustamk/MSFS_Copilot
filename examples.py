@@ -1,3 +1,4 @@
+# Examples for the Cypher query generator
 examples = [
     {
         "question": "Which airplanes are in the database?",
@@ -26,6 +27,10 @@ examples = [
     {
         "question": "What is the definition of vne in the cessna 172's poh?",
         "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vne'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
+    },
+    {
+        "question": "What is the definition of vx in the cessna 172's poh?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vx'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
     },
     {
         "question": "What is the definition of kcas in the cessna 172's poh?",

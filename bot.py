@@ -1,7 +1,8 @@
-import streamlit as st
 from agent import generate_response
 from utils import write_message
+import streamlit as st
 
+  
 # Page Config
 st.set_page_config(
     "MSFS Co-pilot",

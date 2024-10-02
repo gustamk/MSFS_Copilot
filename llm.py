@@ -1,4 +1,5 @@
 from langchain_community.llms import Ollama
+from langchain_community.embeddings import OllamaEmbeddings
 
 # LLMs
 
@@ -24,13 +25,12 @@ llm_weather = Ollama(model= "mistral-nemo:latest",
 
 llm_cypher = Ollama(model="llama3.1:8b",
             temperature = 0,
-            system = """
-            You are strictly responsible for generating cypher code for retrieving information from a database. do not write anything other than cypher code. 
-            """
+            )
+
+llm_sql = Ollama(model="mistral-nemo:latest",
+            temperature = 0,
             )
 
 # Embedding model
 
-from langchain_community.embeddings import OllamaEmbeddings
-
-embeddings = OllamaEmbeddings(model = "all-minilm")
+embeddings = OllamaEmbeddings(model = "all-minilm:latest")

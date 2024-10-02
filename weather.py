@@ -1,91 +1,129 @@
 import requests
 from langchain_core.runnables import RunnableLambda
 import os
-from llm import llm_weather
-
-# Langsmith tracing
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-os.environ["LANGCHAIN_API_KEY"] = "ls__c3610e3383004dcc954af64e3f57c95d" 
+from graph import engine
+from secret import weather_api_key
+from llm import llm_weather, llm_sql
+import psycopg2
+from langchain_community.utilities import SQLDatabase
+from langchain_core.prompts import PromptTemplate
+from langchain.chains.sql_database.query import create_sql_query_chain
+from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
 
 # Functions from getting the weather data from a specific ICAO or nearest location.
 def get_weather(icao_code):
     url = f"https://api.checkwx.com/metar/{icao_code}/decoded"
-    response = requests.request("GET", url, headers={'X-API-Key': 'c19da1f48d204afaa33dc1e9df'})
+    response = requests.request("GET", url, headers={'X-API-Key': weather_api_key})
     return response.text
 
 def get_weather_nearest(icao_code):
     url = f"https://api.checkwx.com/metar/{icao_code}/nearest/decoded"
-    response = requests.request("GET", url, headers={'X-API-Key': 'c19da1f48d204afaa33dc1e9df'})
+    response = requests.request("GET", url, headers={'X-API-Key': weather_api_key})
     return response.text
 
-# Output for the weather retriever parser
-def parse_tool_input(tool_input):
-    """
-    Parse the tool input into icao_code and request_type.
-    
-    Args:
-        tool_input (str): The format of the tool input is 'ICAO_CODE near/local'
-        
-    Returns:
-        tuple: A tuple containing icao_code and request_type
-    """
+# Lambda functions to retrieve the data
+runnable_local = RunnableLambda(
+    func=get_weather
+)
 
-    # Split the tool input by space, we expect there to be only one or two spaces
-    parts = tool_input.split()
-    
-    if len(parts) != 2:
-        raise ValueError("Invalid tool input format. Expected 'ICAO_CODE near/local'")
-        
-    icao_code = parts[0]
-    request_type = parts[1].lower()  # Convert to lower case for comparison
-
-    if request_type not in ['near', 'local']:
-        raise ValueError("Invalid request type. Expected 'near' or 'local'")
-
-    return icao_code, request_type
+runnable_near = RunnableLambda(
+    func=get_weather_nearest
+)
 
 # Prompt template for the weather retriever
 prompt_template = """You are a helpful assistant that retrieves weather information from an API based on airport
-ICAO codes. There are two types of request, either 'near' or 'local'.
+ICAO codes.
 Given an ICAO code of an airport, provide detailed current weather conditions at that location.
-Here is the ICAO code: {{icao_code}}
-Here is the type of request: {{request_type}}
-Weather Information: {{weather_info}}
+The ICAO code you have to use is the following: {icao_code}
+Weather Information: {weather_info}
 """
 
-# Lambda functions to get and process the data 
-def fetch_weather_data_local(icao_code):
-    raw_weather_info = get_weather(icao_code)
+# Prompt template for the ICAO search tool
+search_template = '''Given an input question, first create a syntactically correct query to run, then look at the results of the query and return the answer. 
+Write only the sql query, nothing else.
+Use the following format:
+
+Question: "Question here"
+SQLQuery: "SQL Query to run"
+SQLResult: "Result of the SQLQuery"
+Answer: "Final answer here"
+
+Only use the following tables:.
+
+{table_info}
+
+here is an example question and answer:
+question: "what is the icao for ubatuba airport?"
+SQLQuery:"""
+SELECT DISTINCT icao 
+FROM airport_icao 
+WHERE airport = 'Ubatuba Airport'
+"""
+{top_k}
+User question:
+Question: {input}'''
+
+sql_db = SQLDatabase(engine)
+search_prompt = PromptTemplate.from_template(search_template)
+
+
+# Function for finding the ICAO code from an airport from a SQL database
+def search_icao(tool_input):
+    chain = create_sql_query_chain(llm_sql,
+                               sql_db,
+                               search_prompt,
+                               k=5,
+                               )
+
+    execute_query = QuerySQLDataBaseTool(db=sql_db)
+    chain_retriever = chain | execute_query
+    return chain_retriever.invoke({'question': tool_input})
     
-    return raw_weather_info
-
-runnable_local = RunnableLambda(
-    func=fetch_weather_data_local
-)
-
-def fetch_weather_data_near(icao_code):
-    raw_weather_info = get_weather_nearest(icao_code)
     
-    return raw_weather_info
 
-runnable_near = RunnableLambda(
-    func=fetch_weather_data_near
-)
+# Output parser for the weather retriever
+def parse_tool_input(tool_input):
+    """
+    Parse the tool input into request_type and icao_code.
+    
+    Args:
+        tool_input (str): The format of the tool input is 'near/local ICAO_CODE'
+        
+    Returns:
+        tuple: A tuple containing request_type and icao_code 
+    """
+
+    # Split the tool input by space
+    parts = tool_input.split()    
+    
+    # Define the variables from the tool input
+    icao_code = parts[1]
+    request_type = parts[0].lower()  # Convert to lower case for comparison
+
+    # Error throwback for invalid request type 
+    if request_type not in ['near', 'local', 'search']:
+        raise ValueError("Invalid request type. Expected 'near', 'local' or 'search'")
+    
+    #
+    elif request_type == 'search':
+        icao_code = search_icao(str(parts[1:]))
+        request_type = 'local'
+        return icao_code[3:7], request_type
+        
+    return icao_code, request_type
 
 # Define the retriever for the agent tool.
 def weather_retriever(tool_input):
     icao_code, request_type = parse_tool_input(tool_input)
-    
     # Fetch and process the data
     if request_type == 'local':
-        processed_data = runnable_local.invoke({"icao_code": icao_code})
-    if request_type == 'near':
-        processed_data = runnable_near.invoke({"icao_code": icao_code})
-    
+        processed_data = runnable_local.invoke(icao_code)
+    elif request_type == 'near':
+        processed_data = runnable_near.invoke(icao_code)
+    print(processed_data)
     # Update the template with the actual retrieved data for the given ICAO code
     updated_prompt = prompt_template.format(icao_code=icao_code, weather_info=processed_data, request_type=request_type)
 
-    # Respond based on the updated prompt
+    # Response based on the updated prompt
     response = llm_weather.invoke(updated_prompt)
     return response
