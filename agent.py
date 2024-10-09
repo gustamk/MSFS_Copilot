@@ -45,8 +45,13 @@ tools = [
         func=aircraft_poh,
         description="""
         Useful for answering questions on the pilot operating handbook (POH) from multiple aircraft.
-        When using this tool, pay attention to the specific aircraft type and the specific question that has to be answered from the POH.
-        Do not use this tool for searching an airport's ICAO. 
+        When using this tool, pay attention to the specific aircraft type and the specific question that has to be answered from the POH. 
+        Do not summarize information from the POH, give hollistic responses which include everything provided by the context of the tool.
+        If a user asks about a specific procedure or checklist, pay close attention to the exact procedure name.
+        Here is an example user question and the correct tool input. 
+        
+        user question: What is the engine failure checklist during takeoff roll?
+        tool input: "Cessna 172 engine failure checklist takeoff roll"
         """,
         handle_tool_error = True,
     ),

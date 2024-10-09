@@ -3,7 +3,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 
 # LLMs
 
-llm = Ollama(model="llama3.1:8b",
+llm_qa = Ollama(model="deepseek-coder-v2:latest",
             temperature = 0,
             system = """
             you are a helpful assistant to an airplane pilot. Answer the questions with completeness in mind. If you are provided contextual information, it is important that you avoid summarizing the information. If you do not know the answer, then respond that you are unable to help. You may receive contextual information as a result from a tool call, which can appear in a format similar to the following.
@@ -23,7 +23,7 @@ llm_weather = Ollama(model= "mistral-nemo:latest",
             verbose=True,
             )
 
-llm_cypher = Ollama(model="llama3.1:8b",
+llm_cypher = Ollama(model="deepseek-coder-v2:latest",
             temperature = 0,
             )
 

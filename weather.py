@@ -1,16 +1,14 @@
 import requests
 from langchain_core.runnables import RunnableLambda
-import os
 from graph import engine
 from secret import weather_api_key
 from llm import llm_weather, llm_sql
-import psycopg2
 from langchain_community.utilities import SQLDatabase
 from langchain_core.prompts import PromptTemplate
 from langchain.chains.sql_database.query import create_sql_query_chain
 from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
 
-# Functions from getting the weather data from a specific ICAO or nearest location.
+# Functions for getting the weather data from Checkwx API
 def get_weather(icao_code):
     url = f"https://api.checkwx.com/metar/{icao_code}/decoded"
     response = requests.request("GET", url, headers={'X-API-Key': weather_api_key})
@@ -21,7 +19,7 @@ def get_weather_nearest(icao_code):
     response = requests.request("GET", url, headers={'X-API-Key': weather_api_key})
     return response.text
 
-# Lambda functions to retrieve the data
+# Runnables for retrieving the weather data
 runnable_local = RunnableLambda(
     func=get_weather
 )
@@ -57,15 +55,15 @@ question: "what is the icao for ubatuba airport?"
 SQLQuery:"""
 SELECT DISTINCT icao 
 FROM airport_icao 
-WHERE airport = 'Ubatuba Airport'
+WHERE lower(airport) like '%ubatuba%'
 """
+The sql query only needs to retrieve the icao, nothing else. Do not include the iata. No pre-amble, your first word must be "SELECT".
 {top_k}
 User question:
 Question: {input}'''
 
 sql_db = SQLDatabase(engine)
 search_prompt = PromptTemplate.from_template(search_template)
-
 
 # Function for finding the ICAO code from an airport from a SQL database
 def search_icao(tool_input):
@@ -79,8 +77,6 @@ def search_icao(tool_input):
     chain_retriever = chain | execute_query
     return chain_retriever.invoke({'question': tool_input})
     
-    
-
 # Output parser for the weather retriever
 def parse_tool_input(tool_input):
     """
@@ -121,7 +117,7 @@ def weather_retriever(tool_input):
     elif request_type == 'near':
         processed_data = runnable_near.invoke(icao_code)
     print(processed_data)
-    # Update the template with the actual retrieved data for the given ICAO code
+    # Update the template with the retrieved data for the given ICAO code
     updated_prompt = prompt_template.format(icao_code=icao_code, weather_info=processed_data, request_type=request_type)
 
     # Response based on the updated prompt

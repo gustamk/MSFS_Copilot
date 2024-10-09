@@ -14,7 +14,7 @@ graph = Neo4jGraph(driver_config={'database': 'poh'})
 cypher_examples = Neo4jGraph(driver_config={'database': 'examples'})
 sessions = Neo4jGraph(driver_config={'database': 'sessions'})
 
-# Connect to your PostgreSQL database
+# Connect to PostgreSQL database
 conn = psycopg2.connect(
     database="airports",
     user="postgres",

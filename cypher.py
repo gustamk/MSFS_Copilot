@@ -5,8 +5,8 @@ from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_community.vectorstores import Neo4jVector
 from examples import examples
 from secret import langsmith_key
-from llm import embeddings, llm, llm_cypher
-from graph import graph, cypher_examples
+from llm import embeddings, llm_qa, llm_cypher
+from graph import graph
 import os
 
 # Langsmith tracing
@@ -27,7 +27,7 @@ example_selector = SemanticSimilarityExampleSelector.from_examples(
     examples,
     embeddings,
     neo4jvector,
-    k=5,
+    k=3,
     input_keys=["question"],
 )
 
@@ -36,14 +36,15 @@ prompt = FewShotPromptTemplate(
     example_selector=example_selector,
     example_prompt=example_prompt,
     prefix="""
-    You are a Neo4j expert. Given an input question, create a syntactically correct Cypher query to run, no pre amble. 
+    You are a Neo4j expert. Given an input question, create a syntactically correct Cypher query to run. 
     Your sole task is to write Cypher code. Do not write any sentences or words before or after the cypher code, your only task is to create the cypher query for retrieving the correct information.
+    Do not generate any characters after the cypher query. Once you have generated the cypher query, finish your response. 
     It is imperative that you generate the cypher query right from the beginning of your answer. Be extremely precise in writing the cypher query, use lower case words only. 
     Pay close attention to the examples you will be provided, as they give you valuable information about the structure of the database. 
     
     \n\nHere is the schema information
     \n\nNode properties are the following:
-    Airplane_type {{id: STRING, name: STRING}},poh {{id: STRING}},poh_section {{id: STRING, index: INTEGER}},poh_subsection {{id: STRING, description: STRING}},
+    Airplane_type {{id: STRING}},poh {{id: STRING}},poh_section {{id: STRING, index: INTEGER}},poh_subsection {{id: STRING, description: STRING}},
     poh_subsection_item {{id: STRING, description: STRING, instruction: STRING}},item_values {{id: STRING, instruction: STRING, index: INTEGER, description: STRING}}
 
     Relationship properties are the following:
@@ -63,7 +64,7 @@ chain_cypher = GraphCypherQAChain.from_llm(
     cypher_llm=llm_cypher,
     cypher_prompt=prompt,
     verbose=True,
-    qa_llm=llm,
+    qa_llm=llm_qa,
     allow_dangerous_requests = True,
 )
 

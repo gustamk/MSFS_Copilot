@@ -25,16 +25,16 @@ examples = [
         "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'meteorological terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'standard temperature'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
     },
     {
-        "question": "What is the definition of vne in the cessna 172's poh?",
-        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vne'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
+        "question": "What is the definition of vne speed in the cessna 172's poh?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology and symbols'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vne'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
     },
     {
-        "question": "What is the definition of vx in the cessna 172's poh?",
-        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vx'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
+        "question": "What is the definition of vx speed in the cessna 172's poh?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology and symbols'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'vx'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
     },
     {
-        "question": "What is the definition of kcas in the cessna 172's poh?",
-        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'kcas'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
+        "question": "What is the definition of kcas speed in the cessna 172's poh?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'symbols, abbreviations and terminology'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'general airspeed terminology and symbols'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values{{id:'kcas'}})-[:BELONGS_TO]->(psi) RETURN iv.instruction",
     },
     {
         "question": "What is the definition of lean mixture in the cessna 172's poh?",
@@ -78,6 +78,38 @@ examples = [
     },
     {
         "question": "What is the engine specification for the cessna 172?",
-        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'descriptive data'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'engine'}})-[:BELONGS_TO]->(pss) RETURN ps.description",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'general'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'descriptive data'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'engine'}})-[:BELONGS_TO]->(pss) RETURN psi.description",
+    },
+    {
+        "question": "What is the emergency landing checklist without engine power for the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'forced landings checklists'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'emergency landing without engine power'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction ORDER BY iv.index ASC",
+    },
+    {
+        "question": "What is the emergency ditch landing checklist for the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'forced landings checklists'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'ditching'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction ORDER BY iv.index ASC",
+    },
+    {
+        "question": "What is the emergency checklist for engine failure during takeoff roll from the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'engine failures checklists'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'engine failure during takeoff roll'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction ORDER BY iv.index ASC",
+    },
+    {
+        "question": "What is the emergency checklist for engine failure during flight from the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'engine failures checklists'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'engine failure during takeoff flight'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction ORDER BY iv.index ASC",
+    },
+    {
+        "question": "What is the emergency checklist for engine failure immmediately after takeoff from the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'engine failures checklists'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id: 'engine failure immediately after takeoff'}})-[:BELONGS_TO]->(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction ORDER BY iv.index ASC",
+    },
+    {
+        "question": "What is the maximum glide speed for the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'airspeeds for emergency operations'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id:'maximum glide'}}) RETURN psi.id, psi.instruction",
+    },
+    {
+        "question": "What is the max glide speed for the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'airspeeds for emergency operations'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id:'maximum glide'}}) RETURN psi.id, psi.instruction",
+    },
+    {
+        "question": "Which are the maneuvering speeds for the cessna 172?",
+        "query": "MATCH(poh:poh{{id: 'cessna 172 poh'}}) MATCH(ps:poh_section{{id:'emergency procedures'}})-[:BELONGS_TO]->(poh) MATCH(pss:poh_subsection{{id:'airspeeds for emergency operations'}})-[:BELONGS_TO]->(ps) MATCH(psi:poh_subsection_item{{id:'maneuvering speed'}})-[:BELONGS_TO]-(pss) MATCH(iv:item_values)-[:BELONGS_TO]-(psi) RETURN iv.id, iv.instruction",
     },
 ]
