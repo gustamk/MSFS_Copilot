@@ -1,4 +1,4 @@
-```markdown
+
 # MSFS_Copilot
 
 Welcome to the repository for my ongoing personal project! This involves creating a chatbot designed to be used in conjunction with Microsoft Flight Simulator (MSFS). My goal is to develop an application that helps users learn 
@@ -22,5 +22,3 @@ The chatbot is powered by an LLM agent, which is built with Ollama and Langchain
 
 - **Flight Plan QA**: Ability to provide the chatbot with a SimBrief flight plan and allow it to read back information from the flight plan.
 - **Aviation Terminology**: Access to additional documents on aviation terminology, regarding flight rules, reading navigation charts, and others.
-
-```
