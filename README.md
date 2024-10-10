@@ -7,7 +7,7 @@ The chatbot is powered by an LLM agent, which is built with Ollama and Langchain
 
 ## Features
 
-### Current Features
+### Current Features 
 
 - **Streamlit UI**: Currently, the chatbot uses Streamlit for creating an intuitive user interface.
 - **Airport Weather Tool**: Allows interaction with the Checkwx API to retrieve weather data from any airport by providing the ICAO code. Additionally, it is possible to search just with an airport name, which is accomplished by adding a SQL lookup to a PostgreSQL database.
@@ -16,7 +16,7 @@ The chatbot is powered by an LLM agent, which is built with Ollama and Langchain
 ### Upcoming Features
 
 - **Airport Charts QA**: A tool for answering questions from airport charts. I have a prototype using a fine-tuned multi-modal language model to extract information from airport charts, but there are still some technical difficulties to overcome for consistency and reliability.
-- **Calculator / Conversion Tool**: Useful for various conversions and calculations in aviation.
+- **Calculator / Conversion Tool**: Useful for conversion of air pressure, different speed units, and altitude values. 
 
 ### Planned Features
 
