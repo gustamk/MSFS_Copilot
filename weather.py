@@ -101,7 +101,7 @@ def parse_tool_input(tool_input):
     if request_type not in ['near', 'local', 'search']:
         raise ValueError("Invalid request type. Expected 'near', 'local' or 'search'")
     
-    #
+    # ICAO search from the airport name 
     elif request_type == 'search':
         icao_code = search_icao(str(parts[1:]))
         request_type = 'local'
