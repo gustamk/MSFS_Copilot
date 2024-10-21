@@ -1,4 +1,4 @@
-from langchain_community.llms import Ollama
+from langchain_community.llms.ollama import Ollama
 from langchain_community.embeddings import OllamaEmbeddings
 
 # LLMs

@@ -83,7 +83,8 @@ def parse_tool_input(tool_input):
     Parse the tool input into request_type and icao_code.
     
     Args:
-        tool_input (str): The format of the tool input is 'near/local ICAO_CODE'
+        tool_input (str): The format of the tool input is 'near/local ICAO_CODE'.
+        If the ICAO search is required, then the input format is 'search airport name'
         
     Returns:
         tuple: A tuple containing request_type and icao_code 

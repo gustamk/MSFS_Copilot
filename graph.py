@@ -21,7 +21,12 @@ conn = psycopg2.connect(
     password=postgre_password,
     host="localhost",
     port= postgre_port
+    ,
 )
 
 # Define the engine from the PostgreSQL database
-engine = create_engine(engine_uri)
+engine = create_engine(
+    engine_uri, 
+    isolation_level="READ UNCOMMITTED",
+    execution_options = {"postgresql_readonly": True}
+    )
